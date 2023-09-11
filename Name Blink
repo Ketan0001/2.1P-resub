@@ -1,0 +1,93 @@
+const short SHORT_BLINK = 250;     // Duration for a short blink (dot) in milliseconds
+const short LONG_BLINK = 500;      // Duration for a long blink (dash) in milliseconds
+const short CHARACTER_PAUSE = 1000; // Pause between characters in milliseconds
+const short LETTER_PAUSE = 3000;    // Pause between words (letters) in milliseconds
+
+int pushButton = 3;                // Pin number for the push button
+int pushButtonState;               
+
+// Morse code representation for each alphabet (A to Z)
+const char morseAlphabets[26][5] = {
+  {'.', '-'},   // A
+  {'-', '.', '.', '.'},   // B
+  {'-', '.', '-', '.'},   // C
+  {'-', '.', '.'},       // D
+  {'.'},             // E
+  {'.', '.', '-', '.'},   // F
+  {'-', '-', '.'},       // G
+  {'.', '.', '.', '.'},   // H
+  {'.', '.'},         // I
+  {'.', '-', '-', '-'},   // J
+  {'-', '.', '-'},       // K
+  {'.', '-', '.', '.'},   // L
+  {'-', '-'},         // M
+  {'-', '.'},         // N
+  {'-', '-', '-'},       // O
+  {'.', '-', '-', '.'},   // P
+  {'-', '-', '.', '-'},   // Q
+  {'.', '-', '.'},       // R
+  {'.', '.', '.'},       // S
+  {'-'},             // T
+  {'.', '.', '-'},       // U
+  {'.', '.', '.', '-'},   // V
+  {'.', '-', '-'},       // W
+  {'-', '.', '.', '-'},   // X
+  {'-', '.', '-', '-'},   // Y
+  {'-', '-', '.', '.'}    // Z
+};
+
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);  // Set the built-in LED as an OUTPUT
+  pinMode(pushButton, INPUT_PULLUP); // Set the push button as an INPUT with pull-up resistor
+}
+
+void blinkDot() {
+  digitalWrite(LED_BUILTIN, HIGH);  // Turn on the LED
+  delay(SHORT_BLINK);               // Wait for a short duration
+  digitalWrite(LED_BUILTIN, LOW);   // Turn off the LED
+  delay(SHORT_BLINK);               // Wait for the same duration to complete the dot
+}
+
+void blinkDash() {
+  digitalWrite(LED_BUILTIN, HIGH);  // Turn on the LED
+  delay(LONG_BLINK);                // Wait for a long duration
+  digitalWrite(LED_BUILTIN, LOW);   // Turn off the LED
+  delay(SHORT_BLINK);               // Wait for the same duration to complete the dash
+}
+
+void blinkCharacterPause() {
+  delay(CHARACTER_PAUSE);  // Pause between characters
+}
+
+void blinkLetterPause() {
+  delay(LETTER_PAUSE);    // Pause between words (letters)
+}
+
+void blinkMorseCode(char letter) {
+  int index = letter - 'A';  // Calculate the index for the letter in morseAlphabets array
+  if (index >= 0 && index < 26) {
+    for (int i = 0; i < 5 && morseAlphabets[index][i] != '\0'; i++) {
+      if (morseAlphabets[index][i] == '.')
+        blinkDot();   // Blink a dot
+      else if (morseAlphabets[index][i] == '-')
+        blinkDash();  // Blink a dash
+    }
+    blinkCharacterPause();  // Pause between characters
+  }
+}
+
+void loop() {
+  pushButtonState = digitalRead(pushButton);  // Read the state of the push button
+  
+  if (pushButtonState == LOW) {
+    String name = "Ketan"; // Replace with the desired name
+    name.toUpperCase();    // Convert the name to uppercase
+    
+    for (int i = 0; i < name.length(); i++) {
+      char letter = name.charAt(i);
+      blinkMorseCode(letter);  // Blink Morse code for each letter in the name
+    }
+    
+    blinkLetterPause();  // Pause between words (letters)
+  }
+}
